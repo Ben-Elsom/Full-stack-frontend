@@ -1,4 +1,6 @@
 import React, {useState, useEffect} from 'react';
+import MenuItem from "./components/MenuItem"
+
 
 function App() {
   const [menuItems, setMenuItems] = useState([])
@@ -11,21 +13,9 @@ function App() {
   }, [])
   return ( 
   <>
-    {menuItems.map((menuItem)=>( 
-    <div key={menuItem.id}>
-        {console.log(menuItems)}
-
-        <h1>{menuItem.name}</h1>
-        <ul>
-          <li>{menuItem.description}</li>
-          <li>{menuItem.available.toString()}</li>
-          <li>{menuItem.price}</li>
-          <li>{menuItem.category_id}</li>
-        </ul>
-        <img width="200px" src={menuItem.image_url}/>
-      </div>
-    ))}
-  
+    {menuItems.map((item) => { 
+      return <MenuItem name={item.name} description={item.description} available={item.available} price={item.price} category_id={item.category_id} image_url={item.image_url}/>
+    })}
   </>
   );
 }
