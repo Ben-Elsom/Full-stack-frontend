@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import MenuItem from "./components/MenuItem"
+import AddItemForm from "./components/AddItemForm"
 
 
 function App() {
@@ -11,10 +12,13 @@ function App() {
     .then(data => setMenuItems(data))
 
   }, [])
+
   return ( 
   <>
+    <AddItemForm setMenuItems={setMenuItems} menuItems={menuItems} />
+    {console.log(menuItems)}
     {menuItems.map((item) => { 
-      return <MenuItem name={item.name} description={item.description} available={item.available} price={item.price} category_id={item.category_id} image_url={item.image_url}/>
+      return <MenuItem data={item}/>
     })}
   </>
   );
