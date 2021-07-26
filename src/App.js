@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import MenuItem from "./components/MenuItem"
 import AddItemForm from "./components/AddItemForm"
+import SignUp from "./components/signup"
 
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
     {menuItems.map((item) => { 
       return <MenuItem data={item}/>
     })}
+    <SignUp />
   </>
   );
 }
