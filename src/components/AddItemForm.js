@@ -5,12 +5,19 @@ const AddItemForm = (props) => {
         event.preventDefault()
         const {setMenuItems, menuItems} = props
         const { target } = event 
-        const newMenuItem = {name: target[0].value, description: target[2].value, available: target[1].checked, price: target[3].value, image_url: "#"}
+        const newMenuItem = {user_id: 9, name: target[0].value, description: target[2].value, available: target[1].checked, price: target[3].value, image_url: "#", category_id: 25}
         setMenuItems([...menuItems, newMenuItem])
-        const ret = async() => {
-            await fetch("http://localhost:5000/api/menu", {method: "POST", headers:{"Content-Type": "application/json"}, body:{name: "test"}})
-        }
-        console.log(ret())
+        // async function addItemtoDB() {
+            fetch("http://localhost:3000/api/menu", {
+                method: "POST", 
+                headers: {
+                    "Content-Type": "application/json"
+                }, 
+                body: JSON.stringify(newMenuItem)})
+        // }
+        // console.log(addItemtoDB())
+
+       
    
     }
     return (
