@@ -1,6 +1,8 @@
 import React from 'react'
+import { useHistory } from "react-router-dom";
 
 const AddItemForm = (props) => {
+    const history = useHistory()
     function addItem(event) {
         event.preventDefault()
         const {setMenuItems, menuItems} = props
@@ -14,6 +16,7 @@ const AddItemForm = (props) => {
             body: JSON.stringify(newMenuItem)})
             .then(data => data.json)
             .then(response => setMenuItems([...menuItems, newMenuItem]))
+        history.push("/menu")
     }
     return (
         <form onSubmit={addItem}>
