@@ -28,7 +28,7 @@ function App() {
       </Route>
       <Route path="/menu">
         {menuItems.map((item) => { 
-          return <MenuItem data={item}/>
+          return <MenuItem data={item} setMenuItems={setMenuItems} menuItems={menuItems}/>
         })}
       </Route>
       <Route path="/sign_up" component={SignUp}/>
