@@ -9,7 +9,7 @@ const Menu = (props) => {
   async function DeleteItem(event){
     event.preventDefault()
     console.log(id)
-    const response = await fetch(`${process.env.REACT_APP_BACKEND}menu/${id}`, {method: "DELETE"})
+    const response = await fetch(`${process.env.REACT_APP_BACKEND}/menu/${id}`, {method: "DELETE"})
     response.status == 200 ? setMenuItems(menuItems.filter(item => item.id !== id)) : console.log("failed", response) 
   }
   function EditItem(event){
