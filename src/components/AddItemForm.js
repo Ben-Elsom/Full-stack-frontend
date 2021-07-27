@@ -1,26 +1,46 @@
-import React from 'react'
+import React, {useEffect, useState} from 'react'
+import { useHistory } from "react-router-dom";
 
 const AddItemForm = (props) => {
+    const [name, setName] = useState("")
+    const [description, setDescription] = useState("")
+    const [available, setAvailable] = useState(false)
+    const [price, setPrice] = useState("")
+
+
+    const history = useHistory()
     function addItem(event) {
         event.preventDefault()
         const {setMenuItems, menuItems} = props
         const { target } = event 
-    s
-       
-        setMenuItems([...menuItems, {name: target[0].value, description: target[2].value, available: target[1].checked, price: target[3].value, image_url: "#"}])
-   
-        // Make fetch/post request to http://localhost:3000/api/menu with this data
+        const newMenuItem = {
+            user_id: 9, 
+            name, 
+            description,
+            available,
+            price,
+            image_url: "#", category_id: 25
+        }
+        fetch(`${process.env.REACT_APP_BACKEND}/menu`, {
+            method: "POST", 
+            headers: {
+                "Content-Type": "application/json"
+            }, 
+            body: JSON.stringify(newMenuItem)})
+            .then(data => data.json)
+            .then(response => setMenuItems([...menuItems, newMenuItem]))
+        history.push("/menu")
     }
     return (
         <form onSubmit={addItem}>
             <label>Name:</label>
-            <input type="text"></input><br/>
+            <input value={name} onChange={e => setName(e.target.value)} type="text"/><br/>
             <label>Available?:</label>
-            <input type="checkbox"></input><br/>
+            <input value={available} onChange={e => setAvailable(e.target.checked)} type="checkbox"/ ><br/>
             <label>Description?:</label>
-            <input type="text"></input><br/>
-            <label>Price:</label>
-            <input type="decimal"></input><br/>
+            <input value={description} onChange={e => setDescription(e.target.value)}type="text" /><br/>
+            <label> Price:</label>
+            <input value={price} onChange={e => setPrice(e.target.value)}type="decimal" /><br/>
             <label>Thumbnail:</label>
             <input type="file"></input><br/>
             <input type="submit" value="Submit" />
