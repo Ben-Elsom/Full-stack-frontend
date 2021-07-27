@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {BrowserRouter as Router, Route} from "react-router-dom"
 import MenuItem from "./components/MenuItem"
 import AddItemForm from "./components/AddItemForm"
-import SignUp from "./components/Signup"
+import SignUp from "./components/SignUp"
 import SignIn from "./components/SignIn"
 import Nav from "./components/Nav"
 import Edit from "./components/Edit"
