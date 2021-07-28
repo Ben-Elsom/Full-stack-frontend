@@ -10,6 +10,8 @@ const Nav = ({loggedIn, setLoggedIn, removeCookie}) => {
         <div>
             <ul>
                 <li><Link to="/menu">Menu</Link></li>
+                  {/* TODO */}
+                {/* Navbar shouldb;t show add unless current user is admin */}
                 <li><Link to="/menu/add">New Item</Link></li>
                 {!loggedIn ? (
                     <>

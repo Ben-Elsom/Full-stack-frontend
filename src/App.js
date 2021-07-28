@@ -11,37 +11,51 @@ import {useCookies} from 'react-cookie'
 
 function App() {
   const [cookies, setCookie, removeCookie ] = useCookies("JWT")
-
   const [menuItems, setMenuItems] = useState([])
   const [loggedIn, setLoggedIn] = useState(cookies.JWT ? true : false)
-
-  console.log(cookies)
+  const [errors, setErrors] = useState([])
+  
 
   useEffect(() => {
     fetch(`${process.env.REACT_APP_BACKEND}/menu`)
     .then(response => response.json())
     .then(data => setMenuItems(data))
 
+    // TODO
+    // Fetch request to get_user
+
   }, [])
 
-
-
   return ( 
-  <>
-    <Router>
-      <Nav setLoggedIn={setLoggedIn} loggedIn={loggedIn} removeCookie={removeCookie} />
-      <Route exact path="/menu/add" >
-        <AddItemForm setMenuItems={setMenuItems} menuItems={menuItems} />
-      </Route>
-      <Route exact path="/menu/:id/edit" render={() => <Edit menuItems={menuItems} />}/>
-      <Route path="/menu">
-        {menuItems.map((item) => { 
-          return <MenuItem data={item} setMenuItems={setMenuItems} menuItems={menuItems}/>
-        })}
-      </Route>
-      <Route path="/sign_up" render={() => <SignUp setLoggedIn={setLoggedIn} setCookie={setCookie}  />}/ >
-      <Route path="/sign_in" component={SignIn}/>
-    </Router>
+  <> {errors.length > 0 ? (
+    <div>
+      <ul>
+        {errors.map((error) => (
+          <li>{error}</li>
+        ))
+        }
+      </ul>
+    </div>
+    ) : null
+  }
+      <Router>
+        <Nav setLoggedIn={setLoggedIn} loggedIn={loggedIn} removeCookie={removeCookie} />
+        <Route exact path="/menu/add" >
+          <AddItemForm setErrors={setErrors} setMenuItems={setMenuItems} menuItems={menuItems} cookies={cookies} />
+        </Route>
+        <Route exact path="/menu/:id/edit" render={() => <Edit menuItems={menuItems} />}/>
+        <Route path="/menu">
+          {/* TODO */}
+          {/* Allow admin to see all items  */}
+          {menuItems.map((item) => { 
+            if (item.available) {
+              return <MenuItem data={item} setMenuItems={setMenuItems} menuItems={menuItems}/>
+            }
+          })}
+        </Route>
+        <Route path="/sign_up" render={() => <SignUp setErrors={setErrors}setLoggedIn={setLoggedIn} setCookie={setCookie}  />}/ >
+        <Route path="/sign_in" render={ () => <SignIn  setErrors={setErrors} setLoggedIn={setLoggedIn} setCookie={setCookie} />} />
+      </Router>
 
   </>
   );

@@ -1,8 +1,11 @@
 import { useState } from 'react'
+import { useHistory } from "react-router-dom";
 
-const SignIn = () => {
+const SignIn = ({setErrors, setLoggedIn, setCookie}) => {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const history = useHistory()
+
     function signInMethod(event) {
         event.preventDefault()
         const signInData = {
@@ -17,7 +20,15 @@ const SignIn = () => {
             body: JSON.stringify(signInData)
         })
         .then(response => response.json())
-        .then(responseData => console.log(responseData))
+        .then(responseData => {
+            if (responseData.error){
+                setErrors([responseData.error])
+            } else {
+                setCookie('JWT', responseData.jwt)
+                setLoggedIn(true)
+                history.push("/menu")
+            }}
+        )
     }
     return (
         <div>

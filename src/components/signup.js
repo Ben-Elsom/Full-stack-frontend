@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import {useHistory} from 'react-router-dom'
 
-const SignUp = ({ setLoggedIn, setCookie }) => {
+const SignUp = ({ setLoggedIn, setCookie, setErrors }) => {
     const history = useHistory()
     const [email, setEmail] = useState("")
     const [firstName, setFirstName] = useState("")
@@ -17,7 +17,7 @@ const SignUp = ({ setLoggedIn, setCookie }) => {
             last_name: lastName,
             phone_number: phoneNumber,
             password,
-            passwordConfirmation,
+            password_confirmation: passwordConfirmation
         }
         fetch(`${process.env.REACT_APP_BACKEND}/auth/sign_up`, {
             method: "POST",
@@ -28,12 +28,20 @@ const SignUp = ({ setLoggedIn, setCookie }) => {
         })
         .then(response => response.json())
         .then(responseData => {
-            setCookie('JWT', responseData.jwt)
-            setLoggedIn(true)
-            history.push("/menu")
-
-
-        
+            if (!responseData.error) {
+                setCookie('JWT', responseData.jwt)
+                setLoggedIn(true)
+                setErrors([])
+                history.push("/menu")
+            } else {
+                const errors = []
+                Object.keys(responseData.error).forEach(key => {
+                    responseData.error[key].forEach(value => {
+                        errors.push(`${key.replace("_", " ")} ${value}`)
+                    })
+                });
+                setErrors(errors)
+            }
         })
     }
     return (

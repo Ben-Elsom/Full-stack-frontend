@@ -1,26 +1,33 @@
 import React, {useEffect, useState} from 'react'
 import { useHistory } from "react-router-dom";
 
-const AddItemForm = (props) => {
+const AddItemForm = ({setMenuItems, menuItems, cookies, setErrors}) => {
     const [name, setName] = useState("")
     const [description, setDescription] = useState("")
     const [available, setAvailable] = useState(false)
     const [price, setPrice] = useState("")
     const [categories, setCategories] = useState([])
     const [categoryId, setCategoryId ] = useState(``)
-    console.log(categories)
+
+    // console.log(categories[0].id)
+    // want to set a default value for categoryid but it won't work on startup 
 
     useEffect(() => {
         fetch(process.env.REACT_APP_BACKEND+"/categories")
         .then(response => response.json())
-        .then(categories => setCategories(categories))
+        .then(categories => {
+            setCategories(categories)
+            setCategoryId(categories[0].id)
+        })
+        .catch(error => console.log(error))
+
+
     },[])
 
 
     const history = useHistory()
     function addItem(event) {
         event.preventDefault()
-        const {setMenuItems, menuItems} = props
         const { target } = event 
         const formData = new FormData()
         formData.append("name", name)
@@ -29,24 +36,34 @@ const AddItemForm = (props) => {
         formData.append("price", price)
         formData.append("thumbnail", document.getElementById("fileUpload").files[0])
         formData.append("category_id", categoryId)
-        // const newMenuItem = {
-        //     user_id: 9, 
-        //     name, 
-        //     description,
-        //     available,
-        //     price,
-        //     image_url: "#", category_id: 25
-        // }
+    
+        
         fetch(`${process.env.REACT_APP_BACKEND}/menu`, {
             method: "POST", 
-            // headers: {
-            //     "Content-Type": "multipart/form-data"
-            // }, 
+            headers: {
+            
+                "Authorization": `Bearer ${cookies.JWT}`,
+            }, 
             body: formData
         })
-        .then(data => data.json)
-        // .then(response => setMenuItems([...menuItems, newMenuItem]))
-        history.push("/menu")
+        .then(data => data.json())
+        .then(response => {
+            console.log(response)
+            if (response.id) {
+                console.log("this is successful")
+                setMenuItems([...menuItems, response])
+                history.push("/menu")
+            } else {
+                setErrors([response.error])
+            }
+        })
+        .catch(error => {
+            console.log("erorrful")
+            console.log(error)
+        })
+
+
+        
     }
     return (
         <form id="foo" onSubmit={addItem}>
@@ -64,7 +81,7 @@ const AddItemForm = (props) => {
                 {categories.map(category => (
                     <option value={category.id}>{category.name}</option>
                 ))}
-            </select>
+            </select><br/>
             <input id="fileUpload" type="file"></input><br/>
             <input type="submit" value="Submit" />
         </form>
