@@ -6,6 +6,15 @@ const AddItemForm = (props) => {
     const [description, setDescription] = useState("")
     const [available, setAvailable] = useState(false)
     const [price, setPrice] = useState("")
+    const [categories, setCategories] = useState([])
+    const [categoryId, setCategoryId ] = useState(``)
+    console.log(categories)
+
+    useEffect(() => {
+        fetch(process.env.REACT_APP_BACKEND+"/categories")
+        .then(response => response.json())
+        .then(categories => setCategories(categories))
+    },[])
 
 
     const history = useHistory()
@@ -19,6 +28,7 @@ const AddItemForm = (props) => {
         formData.append("available", available)
         formData.append("price", price)
         formData.append("thumbnail", document.getElementById("fileUpload").files[0])
+        formData.append("category_id", categoryId)
         // const newMenuItem = {
         //     user_id: 9, 
         //     name, 
@@ -49,6 +59,12 @@ const AddItemForm = (props) => {
             <label> Price:</label>
             <input value={price} onChange={e => setPrice(e.target.value)}type="decimal" /><br/>
             <label>Thumbnail:</label>
+            <label>Category</label>
+            <select onChange={e => setCategoryId(e.target.value)}>
+                {categories.map(category => (
+                    <option value={category.id}>{category.name}</option>
+                ))}
+            </select>
             <input id="fileUpload" type="file"></input><br/>
             <input type="submit" value="Submit" />
         </form>

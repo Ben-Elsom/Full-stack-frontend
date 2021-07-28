@@ -6,10 +6,16 @@ import SignUp from "./components/SignUp"
 import SignIn from "./components/SignIn"
 import Nav from "./components/Nav"
 import Edit from "./components/Edit"
+import {useCookies} from 'react-cookie'
 
 
 function App() {
+  const [cookies, setCookie, removeCookie ] = useCookies("JWT")
+
   const [menuItems, setMenuItems] = useState([])
+  const [loggedIn, setLoggedIn] = useState(cookies.JWT ? true : false)
+
+  console.log(cookies)
 
   useEffect(() => {
     fetch(`${process.env.REACT_APP_BACKEND}/menu`)
@@ -23,7 +29,7 @@ function App() {
   return ( 
   <>
     <Router>
-      <Route path="/" component={Nav}></Route>
+      <Nav setLoggedIn={setLoggedIn} loggedIn={loggedIn} removeCookie={removeCookie} />
       <Route exact path="/menu/add" >
         <AddItemForm setMenuItems={setMenuItems} menuItems={menuItems} />
       </Route>
@@ -33,10 +39,10 @@ function App() {
           return <MenuItem data={item} setMenuItems={setMenuItems} menuItems={menuItems}/>
         })}
       </Route>
-      <Route path="/sign_up" component={SignUp}/>
+      <Route path="/sign_up" render={() => <SignUp setLoggedIn={setLoggedIn} setCookie={setCookie}  />}/ >
       <Route path="/sign_in" component={SignIn}/>
     </Router>
-    
+
   </>
   );
 }

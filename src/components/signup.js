@@ -1,30 +1,60 @@
-import React from 'react'
+import React, { useState } from 'react'
+import {useHistory} from 'react-router-dom'
 
-const signup = () => {
+const SignUp = ({ setLoggedIn, setCookie }) => {
+    const history = useHistory()
+    const [email, setEmail] = useState("")
+    const [firstName, setFirstName] = useState("")
+    const [lastName, setLastName] = useState("")
+    const [phoneNumber, setPhoneNumber] = useState("")
+    const [password, setPassword] = useState("")
+    const [passwordConfirmation, setPasswordConfirmation] = useState("")
     function signUpFunction(event){
         event.preventDefault()
+        const signUpData = {
+            email,
+            first_name: firstName,
+            last_name: lastName,
+            phone_number: phoneNumber,
+            password,
+            passwordConfirmation,
+        }
+        fetch(`${process.env.REACT_APP_BACKEND}/auth/sign_up`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            }, 
+            body: JSON.stringify(signUpData)
+        })
+        .then(response => response.json())
+        .then(responseData => {
+            setCookie('JWT', responseData.jwt)
+            setLoggedIn(true)
+            history.push("/menu")
+
+
         
+        })
     }
     return (
         <div>
             <form onSubmit={signUpFunction}>
                 <label>Email:</label>
-                <input type="email"></input><br/>
+                <input onChange={(event => setEmail(event.target.value))}type="email"></input><br/>
                 <label>First name:</label>
-                <input type="text"></input><br/>
+                <input onChange={(event => setFirstName(event.target.value))} type="text"></input><br/>
                 <label>Last name:</label>
-                <input type="text"></input><br/>
+                <input onChange={(event => setLastName(event.target.value))} type="text"></input><br/>
                 <label>Phone number</label>
-                <input type="number"></input><br/>
+                <input onChange={(event => setPhoneNumber(event.target.value))} type="number"></input><br/>
                 <label>Password:</label>
-                <input type="password"></input><br/>
+                <input onChange={(event => setPassword(event.target.value))} type="password"></input><br/>
                 <label>Confirm password:</label>
-                <input type="password"></input><br/>
+                <input onChange={(event => setPasswordConfirmation(event.target.value))} type="password"></input><br/>
                 <input type="submit"></input>
-
             </form>
         </div>
     )
 }
 
-export default signup
+export default SignUp
