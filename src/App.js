@@ -14,6 +14,7 @@ function App() {
   const [menuItems, setMenuItems] = useState([])
   const [loggedIn, setLoggedIn] = useState(cookies.JWT ? true : false)
   const [errors, setErrors] = useState([])
+  const [user, setUser] = useState({})
   
 
   useEffect(() => {
@@ -23,6 +24,21 @@ function App() {
 
     // TODO
     // Fetch request to get_user
+    if (cookies.JWT){
+      fetch(`${process.env.REACT_APP_BACKEND}/auth/user`, {
+        headers: {
+            "Authorization": `Bearer ${cookies.JWT}`,
+        },
+    })
+    .then(response => response.json())
+    .then(data => setUser(data))
+
+    }
+
+
+
+
+
 
   }, [])
 
@@ -39,22 +55,20 @@ function App() {
     ) : null
   }
       <Router>
-        <Nav setLoggedIn={setLoggedIn} loggedIn={loggedIn} removeCookie={removeCookie} />
+        <Nav user={user} setUser={setUser} setLoggedIn={setLoggedIn} loggedIn={loggedIn} removeCookie={removeCookie} />
         <Route exact path="/menu/add" >
           <AddItemForm setErrors={setErrors} setMenuItems={setMenuItems} menuItems={menuItems} cookies={cookies} />
         </Route>
         <Route exact path="/menu/:id/edit" render={() => <Edit menuItems={menuItems} />}/>
         <Route path="/menu">
-          {/* TODO */}
-          {/* Allow admin to see all items  */}
           {menuItems.map((item) => { 
-            if (item.available) {
+            if (item.available || user.is_admin) {
               return <MenuItem data={item} setMenuItems={setMenuItems} menuItems={menuItems}/>
             }
           })}
         </Route>
-        <Route path="/sign_up" render={() => <SignUp setErrors={setErrors}setLoggedIn={setLoggedIn} setCookie={setCookie}  />}/ >
-        <Route path="/sign_in" render={ () => <SignIn  setErrors={setErrors} setLoggedIn={setLoggedIn} setCookie={setCookie} />} />
+        <Route path="/sign_up" render={() => <SignUp  setUser={setUser} setErrors={setErrors}setLoggedIn={setLoggedIn} setCookie={setCookie}  />}/ >
+        <Route path="/sign_in" render={ () => <SignIn setUser={setUser} setErrors={setErrors} setLoggedIn={setLoggedIn} setCookie={setCookie} />} />
       </Router>
 
   </>

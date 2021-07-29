@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useHistory } from "react-router-dom";
 
-const SignIn = ({setErrors, setLoggedIn, setCookie}) => {
+const SignIn = ({setErrors, setLoggedIn, setCookie, setUser}) => {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const history = useHistory()
@@ -26,6 +26,7 @@ const SignIn = ({setErrors, setLoggedIn, setCookie}) => {
             } else {
                 setCookie('JWT', responseData.jwt)
                 setLoggedIn(true)
+                setUser(responseData.user)
                 history.push("/menu")
             }}
         )

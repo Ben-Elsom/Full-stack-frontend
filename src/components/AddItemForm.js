@@ -54,7 +54,14 @@ const AddItemForm = ({setMenuItems, menuItems, cookies, setErrors}) => {
                 setMenuItems([...menuItems, response])
                 history.push("/menu")
             } else {
-                setErrors([response.error])
+                console.log("there was an error")
+                const errors = []
+                Object.keys(response.error).forEach(key => {
+                    response.error[key].forEach(value => {
+                        errors.push(`${key.replace("_", " ")} ${value}`)
+                    })
+                });
+                setErrors(errors)
             }
         })
         .catch(error => {
