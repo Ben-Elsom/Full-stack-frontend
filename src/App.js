@@ -2,8 +2,8 @@ import React, {useState, useEffect, createContext, useReducer} from 'react';
 import {BrowserRouter as Router, Route} from "react-router-dom"
 import MenuItem from "./components/MenuItem"
 import AddItemForm from "./components/AddItemForm"
-import SignUp from "./components/SignUp"
-import SignIn from "./components/SignIn"
+import SignUp from "./components/signUp"
+import SignIn from "./components/signIn"
 import Nav from "./components/Nav"
 import Edit from "./components/Edit"
 import {useCookies} from 'react-cookie'
