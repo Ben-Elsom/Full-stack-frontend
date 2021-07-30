@@ -1,7 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import {useHistory} from 'react-router-dom'
+import {Context} from '../App'
 
-const SignUp = ({ setLoggedIn, setCookie, setErrors, setUser }) => {
+
+const SignUp = ({ setCookie }) => {
     const history = useHistory()
     const [email, setEmail] = useState("")
     const [firstName, setFirstName] = useState("")
@@ -9,6 +11,7 @@ const SignUp = ({ setLoggedIn, setCookie, setErrors, setUser }) => {
     const [phoneNumber, setPhoneNumber] = useState("")
     const [password, setPassword] = useState("")
     const [passwordConfirmation, setPasswordConfirmation] = useState("")
+    const {context, dispatch} = useContext(Context)
     function signUpFunction(event){
         event.preventDefault()
         const signUpData = {
@@ -30,9 +33,9 @@ const SignUp = ({ setLoggedIn, setCookie, setErrors, setUser }) => {
         .then(responseData => {
             if (!responseData.error) {
                 setCookie('JWT', responseData.jwt)
-                setLoggedIn(true)
-                setErrors([])
-                setUser(responseData.user)
+                dispatch({action: "change loggedIn", value: true})
+                dispatch({action: "change errors", value: []})
+                dispatch({action: "change user", value:responseData.user})
                 history.push("/menu")
             } else {
                 const errors = []
@@ -40,8 +43,9 @@ const SignUp = ({ setLoggedIn, setCookie, setErrors, setUser }) => {
                     responseData.error[key].forEach(value => {
                         errors.push(`${key.replace("_", " ")} ${value}`)
                     })
-                });
-                setErrors(errors)
+                })
+                console.log(errors)
+                dispatch({action:"change errors", value: errors})
             }
         })
     }
@@ -49,17 +53,17 @@ const SignUp = ({ setLoggedIn, setCookie, setErrors, setUser }) => {
         <div>
             <form onSubmit={signUpFunction}>
                 <label>Email:</label>
-                <input onChange={(event => setEmail(event.target.value))}type="email"></input><br/>
+                <input value={email} onChange={(event => setEmail(event.target.value))}type="email"></input><br/>
                 <label>First name:</label>
-                <input onChange={(event => setFirstName(event.target.value))} type="text"></input><br/>
+                <input value={firstName} onChange={(event => setFirstName(event.target.value))} type="text"></input><br/>
                 <label>Last name:</label>
-                <input onChange={(event => setLastName(event.target.value))} type="text"></input><br/>
+                <input value={lastName} onChange={(event => setLastName(event.target.value))} type="text"></input><br/>
                 <label>Phone number</label>
-                <input onChange={(event => setPhoneNumber(event.target.value))} type="number"></input><br/>
+                <input value={phoneNumber} onChange={(event => setPhoneNumber(event.target.value))} type="number"></input><br/>
                 <label>Password:</label>
-                <input onChange={(event => setPassword(event.target.value))} type="password"></input><br/>
+                <input value={password} onChange={(event => setPassword(event.target.value))} type="password"></input><br/>
                 <label>Confirm password:</label>
-                <input onChange={(event => setPasswordConfirmation(event.target.value))} type="password"></input><br/>
+                <input value={passwordConfirmation} onChange={(event => setPasswordConfirmation(event.target.value))} type="password"></input><br/>
                 <input type="submit"></input>
             </form>
         </div>

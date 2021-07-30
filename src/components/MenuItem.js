@@ -1,21 +1,35 @@
 import { Link } from 'react-router-dom'
 import { useHistory } from "react-router-dom";
+import { Context } from '../App';
+import React, { useContext } from 'react'
+import { useCookies } from 'react-cookie';
 
 
-const Menu = (props) => {
-  const {name, description, available, price, category, image_url, id} = props.data
-  const {setMenuItems, menuItems} = props
-  const history = useHistory
+const Menu = ({name, description, available, price, category, image_url, id}) => {
+  const {context, dispatch} = useContext(Context)
+  const [cookies, setCookie, removeCookie ] = useCookies("JWT")
+
   async function DeleteItem(event){
     event.preventDefault()
-    console.log(id)
-    const response = await fetch(`${process.env.REACT_APP_BACKEND}/menu/${id}`, {method: "DELETE"})
-    response.status == 200 ? setMenuItems(menuItems.filter(item => item.id !== id)) : console.log("failed", response) 
+    console.log(cookies)
+    const response = await fetch(`${process.env.REACT_APP_BACKEND}/menu/${id}`, {
+      headers: {
+        "Authorization": `Bearer ${cookies.JWT}`,
+        "Content-Type": "application/json"
+      },
+      method: "DELETE"
+    })
+     if (response.status == 200) {
+       const newMenuItems = context.menuItems.filter(item => item.id !== id)
+       dispatch({action: "change menuItem", value: newMenuItems})
+     } else {
+       console.log("failed", response) 
+     }
   }
-  function EditItem(event){
-    event.preventDefault()
-    history.push(`/menu/${id}/edit`)
-  }
+  // function EditItem(event){
+  //   event.preventDefault()
+  //   history.push(`/menu/${id}/edit`)
+  // }
  
     return (
       <div style={{border: '2px solid red', width: '50%'}}>
