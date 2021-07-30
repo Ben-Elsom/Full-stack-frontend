@@ -2,7 +2,7 @@ import React, {useState, useEffect, createContext, useReducer} from 'react';
 import {BrowserRouter as Router, Route} from "react-router-dom"
 import MenuItem from "./components/MenuItem"
 import AddItemForm from "./components/AddItemForm"
-import SignUp from "./components/signUp"
+import SignUp from "./components/signup"
 import SignIn from "./components/signIn"
 import Nav from "./components/Nav"
 import Edit from "./components/Edit"
@@ -16,7 +16,6 @@ const initialState = {
 }
 
 function reducer(state, payload) {
-  console.log(payload)
   switch (payload.action) {
     case "change contextValue": {
       return {...state, contextValue: payload.value}
@@ -61,24 +60,23 @@ function App() {
         headers: {
             "Authorization": `Bearer ${cookies.JWT}`,
         },
-    })
-    .then(response => response.json())
-    .then(data => {
-      // DISPATCH
-      setUser(data.user)
-      // set logged in with context
-    })
+      })
+      .then(response => response.json())
+      .then(data => {
+        dispatch({action: "change user", value: data.user })
+        dispatch({action: "change loggedIn", value: true })
+      })
     }
+    
   }, [])
 
   return ( 
   <Context.Provider value={{context, dispatch}}> 
-    {console.log(context.errors)}
     {context.errors.length > 0 ? (
       <div>
         <ul>
-          {context.errors.map((error) => (
-            <li>{error}</li>
+          {context.errors.map((error, index) => (
+            <li key={index}>{error}</li>
           ))
           }
         </ul>
@@ -92,10 +90,10 @@ function App() {
         </Route>
         <Route exact path="/menu/:id/edit" render={() => <Edit cookies={cookies}/>}/>
         <Route path="/menu">
-          {context.menuItems.map((item) => { 
+          {context.menuItems.map((item, index) => { 
             // change to context user
             if (item.available || user.is_admin) {
-              return <MenuItem {...item} />
+              return <MenuItem key={index}{...item} />
             }
           })}
         </Route>

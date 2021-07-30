@@ -11,7 +11,7 @@ const SignUp = ({ setCookie }) => {
     const [phoneNumber, setPhoneNumber] = useState("")
     const [password, setPassword] = useState("")
     const [passwordConfirmation, setPasswordConfirmation] = useState("")
-    const {context, dispatch} = useContext(Context)
+    const {dispatch} = useContext(Context)
     function signUpFunction(event){
         event.preventDefault()
         const signUpData = {
@@ -44,11 +44,11 @@ const SignUp = ({ setCookie }) => {
                         errors.push(`${key.replace("_", " ")} ${value}`)
                     })
                 })
-                console.log(errors)
-                dispatch({action:"change errors", value: errors})
+                  dispatch({action:"change errors", value: errors})
             }
         })
     }
+
     return (
         <div>
             <form onSubmit={signUpFunction}>

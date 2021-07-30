@@ -1,6 +1,7 @@
 import React, {useEffect, useState, useContext} from 'react'
 import { useHistory } from "react-router-dom";
 import {Context} from '../App'
+import { expand_errors } from './helpers/methods';
 
 const AddItemForm = ({cookies}) => {
     const [name, setName] = useState("")
@@ -9,10 +10,8 @@ const AddItemForm = ({cookies}) => {
     const [price, setPrice] = useState("")
     const [categories, setCategories] = useState([])
     const [categoryId, setCategoryId ] = useState(``)
-    const {context, dispatch} = useContext(Context)
+    const {dispatch} = useContext(Context)
     
-    // console.log(categories[0].id)
-    // want to set a default value for categoryid but it won't work on startup 
 
     useEffect(() => {
         fetch(process.env.REACT_APP_BACKEND+"/categories")
@@ -53,14 +52,8 @@ const AddItemForm = ({cookies}) => {
                 dispatch({action: "change menuItems", value: response})
                 history.push("/menu")
             } else {
-                const errors = []
-                console.log(response)
-                Object.keys(response.error).forEach(key => {
-                    response.error[key].forEach(value => {
-                        errors.push(`${key.replace("_", " ")} ${value}`)
-                    })
-                });
-                dispatch({action: "change errors", value: errors })
+                // TODO - TURN into function
+                dispatch({action: "change errors", value: expand_errors(response) })
             }
         })
         .catch(error => {
@@ -83,8 +76,8 @@ const AddItemForm = ({cookies}) => {
             <label>Thumbnail:</label>
             <label>Category</label>
             <select onChange={e => setCategoryId(e.target.value)}>
-                {categories.map(category => (
-                    <option value={category.id}>{category.name}</option>
+                {categories.map((category, index) => (
+                    <option key={index}value={category.id}>{category.name}</option>
                 ))}
             </select><br/>
             <input id="fileUpload" type="file"></input><br/>

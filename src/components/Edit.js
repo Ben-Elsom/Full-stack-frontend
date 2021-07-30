@@ -1,6 +1,7 @@
 import { useEffect, useState, useContext } from 'react'
 import { useHistory, useParams } from "react-router-dom"
 import {Context} from '../App'
+import { expand_errors } from './helpers/methods'
 
 const Edit = ({cookies}) => {
     const history = useHistory()
@@ -57,13 +58,7 @@ const Edit = ({cookies}) => {
                 dispatch({action: "change menuItems", value: array})
                 history.push("/menu")
             } else {
-                const errors = []
-                Object.keys(response.error).forEach(key => {
-                    response.error[key].forEach(value => {
-                        errors.push(`${key.replace("_", " ")} ${value}`)
-                    })
-                });
-                dispatch({action: "change errors", value: errors })
+                dispatch({action: "change errors", value: expand_errors(response) })
             }
         })
     }
