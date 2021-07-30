@@ -6,7 +6,7 @@ const SignIn = ({setCookie}) => {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const history = useHistory()
-    const {context, dispatch} = useContext(Context)
+    const { dispatch} = useContext(Context)
 
 
     function signInMethod(event) {
