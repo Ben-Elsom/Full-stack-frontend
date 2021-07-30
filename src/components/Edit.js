@@ -1,23 +1,24 @@
-import { useEffect, useState } from 'react'
-import { useParams } from "react-router-dom"
-const Edit = ({menuItems}) => {
+import { useEffect, useState, useContext } from 'react'
+import { useHistory, useParams } from "react-router-dom"
+import {Context} from '../App'
+
+const Edit = ({cookies}) => {
+    const history = useHistory()
     const {id} = useParams()
     const [name, setName] = useState("")
     const [description, setDescription] = useState("")
     const [available, setAvailable] = useState(false)
     const [price, setPrice] = useState("")
+    const {context, dispatch} = useContext(Context)
+
     useEffect(() => {
-        console.log(menuItems)
-        console.log(id)
-        if (menuItems.length > 0){
-            const menuItem = menuItems.find(item => item.id == id)
+        if (context.menuItems.length > 0){
+            const menuItem = context.menuItems.find(item => item.id == id)
             setName(menuItem.name)
             setDescription(menuItem.description)
             setAvailable(menuItem.available)
             setPrice(menuItem.price)
-            console.log("ID has changed")
         } else {
-            console.log(process.env.REACT_APP_BACKEND)
             fetch(`${process.env.REACT_APP_BACKEND}/menu/${id}`)
             .then(response => response.json())
             .then(menuItem => {
@@ -37,14 +38,33 @@ const Edit = ({menuItems}) => {
             description,
             available,
             price,
-            image_url: "#"}
-            
+        }
+
+
         fetch(`${process.env.REACT_APP_BACKEND}/menu/${id}`, {
             method: "PUT", 
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${cookies.JWT}`
             }, 
             body: JSON.stringify(newMenuItem)
+        }).then(data => data.json())
+        .then(response => {
+            if (response.id) {
+                const array = [...context.menuItems]
+                const index = array.findIndex(item => item.id == response.id)
+                array[index] = response
+                dispatch({action: "change menuItems", value: array})
+                history.push("/menu")
+            } else {
+                const errors = []
+                Object.keys(response.error).forEach(key => {
+                    response.error[key].forEach(value => {
+                        errors.push(`${key.replace("_", " ")} ${value}`)
+                    })
+                });
+                dispatch({action: "change errors", value: errors })
+            }
         })
     }
     return (
@@ -58,8 +78,6 @@ const Edit = ({menuItems}) => {
             <input value={description} onChange={event => setDescription(event.target.value)} type="text"></input><br/>
             <label>Price:</label>
             <input value={price} onChange={event => setPrice(event.target.value)} type="decimal"></input><br/>
-            <label>Thumbnail:</label>
-            <input type="file"></input><br/>
             <input type="submit" value="Submit" />
         </form>
         </div>

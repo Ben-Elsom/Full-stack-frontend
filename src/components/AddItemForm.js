@@ -1,14 +1,16 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useState, useContext} from 'react'
 import { useHistory } from "react-router-dom";
+import {Context} from '../App'
 
-const AddItemForm = ({setMenuItems, menuItems, cookies, setErrors}) => {
+const AddItemForm = ({cookies}) => {
     const [name, setName] = useState("")
     const [description, setDescription] = useState("")
     const [available, setAvailable] = useState(false)
     const [price, setPrice] = useState("")
     const [categories, setCategories] = useState([])
     const [categoryId, setCategoryId ] = useState(``)
-
+    const {context, dispatch} = useContext(Context)
+    
     // console.log(categories[0].id)
     // want to set a default value for categoryid but it won't work on startup 
 
@@ -41,24 +43,27 @@ const AddItemForm = ({setMenuItems, menuItems, cookies, setErrors}) => {
         fetch(`${process.env.REACT_APP_BACKEND}/menu`, {
             method: "POST", 
             headers: {
-            
                 "Authorization": `Bearer ${cookies.JWT}`,
             }, 
             body: formData
         })
         .then(data => data.json())
         .then(response => {
-            console.log(response)
             if (response.id) {
-                console.log("this is successful")
-                setMenuItems([...menuItems, response])
+                dispatch({action: "change menuItems", value: response})
                 history.push("/menu")
             } else {
-                setErrors([response.error])
+                const errors = []
+                console.log(response)
+                Object.keys(response.error).forEach(key => {
+                    response.error[key].forEach(value => {
+                        errors.push(`${key.replace("_", " ")} ${value}`)
+                    })
+                });
+                dispatch({action: "change errors", value: errors })
             }
         })
         .catch(error => {
-            console.log("erorrful")
             console.log(error)
         })
 

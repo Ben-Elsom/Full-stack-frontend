@@ -1,10 +1,13 @@
-import { useState } from 'react'
+import { useState, useContext } from 'react'
 import { useHistory } from "react-router-dom";
+import {Context} from '../App'
 
-const SignIn = ({setErrors, setLoggedIn, setCookie}) => {
+const SignIn = ({setCookie}) => {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const history = useHistory()
+    const {context, dispatch} = useContext(Context)
+
 
     function signInMethod(event) {
         event.preventDefault()
@@ -22,10 +25,11 @@ const SignIn = ({setErrors, setLoggedIn, setCookie}) => {
         .then(response => response.json())
         .then(responseData => {
             if (responseData.error){
-                setErrors([responseData.error])
+                dispatch({action: "change errors", value: [responseData.error]})
             } else {
                 setCookie('JWT', responseData.jwt)
-                setLoggedIn(true)
+                dispatch({action: "change loggedIn", value: true})
+                dispatch({action: "change user", value: responseData.user})
                 history.push("/menu")
             }}
         )
